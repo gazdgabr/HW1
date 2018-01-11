@@ -3,6 +3,7 @@
 ## 1000 points
 
 ## Gabriella Gazdecki
+## 10 January 2018
 #################################
 
 ## List below here, in a comment/comments, the people you worked with on this assignment AND any resources you used to find code (50 point deduction for not doing so). If none, write "None".
