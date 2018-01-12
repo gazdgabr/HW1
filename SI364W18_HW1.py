@@ -12,8 +12,8 @@
 
 ## [PROBLEM 1] - 150 points
 ## Below is code for one of the simplest possible Flask applications. Edit the code so that once you run this application locally and go to the URL 'http://localhost:5000/class', you see a page that says "Welcome to SI 364!"
-
-from flask import Flask
+import requests
+from flask import Flask, request
 app = Flask(__name__)
 app.debug = True
 
@@ -24,6 +24,39 @@ def hello_to_you():
 @app.route('/class')
 def welcome_class():
 	return "<h1>Welcome to SI 364!</h1>"
+
+@app.route('/movie/<movieName>')
+def movie_search(movieName):
+	base_url = 'https://itunes.apple.com/search?entity=movie&term='
+
+	result = requests.get(base_url+movieName).text
+	return result
+
+@app.route('/question')
+def fav_number():
+
+	s = """<!DOCTYPE html>
+<html>
+<body>
+<form action = "/result" method = "post"> 
+  Enter your favorite number:<br>
+  <input type="text" name="favNum" value="">
+  <br>
+  <input type="submit" value="Submit">
+</form>
+</body>
+</html>"""
+	return s
+
+@app.route('/result', methods = ['POST', 'GET'])
+def double_fav_number():
+
+    if request.method == 'POST':
+      number = request.form['favNum']
+
+    double = int(number)*2
+    return '<h>Double your favorite number is {}</h1>'.format(double)
+
 if __name__ == '__main__':
     app.run()
 
