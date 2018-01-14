@@ -3,16 +3,18 @@
 ## 1000 points
 
 ## Gabriella Gazdecki
-## 10 January 2018
+## Section 003
+## 14 January 2018
 #################################
 
 ## List below here, in a comment/comments, the people you worked with on this assignment AND any resources you used to find code (50 point deduction for not doing so). If none, write "None".
 
-
+##None
 
 ## [PROBLEM 1] - 150 points
 ## Below is code for one of the simplest possible Flask applications. Edit the code so that once you run this application locally and go to the URL 'http://localhost:5000/class', you see a page that says "Welcome to SI 364!"
 import requests
+import json
 from flask import Flask, request
 app = Flask(__name__)
 app.debug = True
@@ -38,7 +40,7 @@ def fav_number():
 	s = """<!DOCTYPE html>
 <html>
 <body>
-<form action = "/result" method = "post"> 
+<form action = "/result" method = "post">
   Enter your favorite number:<br>
   <input type="text" name="favNum" value="">
   <br>
@@ -56,6 +58,57 @@ def double_fav_number():
 
     double = int(number)*2
     return '<h>Double your favorite number is {}</h1>'.format(double)
+
+@app.route('/problem4form', methods=["GET","POST"])
+def problem_four():
+    form = """<!DOCTYPE html>
+<html>
+<body>
+<form action = "/problem4form" method = "GET">
+  Thesaurus:<br>
+  <input type="text" name="user_term" value="Enter your word here">
+  <br>
+  <input type="checkbox" name="synonym" value="Syn"> Show me the synonyms!<br>
+  <input type="checkbox" name="antonym" value="Ant"> Show me the antonyms!<br>
+  <input type="submit" value="Submit">
+</form>
+</body>
+</html>"""
+    if request.method == "GET":
+
+        data = request.args.to_dict(True)
+        user_input = ''
+        synonyms = '<br>'
+        antonyms = '<br>'
+        if 'user_term' in data:
+            user_input = data['user_term']
+
+        if 'antonym' in data:
+            ant_url = "https://api.datamuse.com/words?rel_ant="
+            ant_resp = requests.get(ant_url+user_input)
+
+            ant_dict = json.loads(ant_resp.text)
+
+            for a in ant_dict:
+                antonym = a["word"]
+                antonyms += antonym
+                antonyms += '<br>'
+            if antonyms == '<br>':
+                antonyms += 'No antonyms found'
+
+        if 'synonym' in data:
+            syn_url = "https://api.datamuse.com/words?rel_syn="
+            syn_resp = requests.get(syn_url+user_input)
+
+            syn_dict = json.loads(syn_resp.text)
+
+            for s in syn_dict:
+                synonym = s["word"]
+                synonyms += synonym
+                synonyms += '<br>'
+
+    return form + "<br><br> The synonyms for {} are: {} <br><br> The antonyms for {} are: {}".format(user_input, synonyms, user_input, antonyms)
+
 
 if __name__ == '__main__':
     app.run()
